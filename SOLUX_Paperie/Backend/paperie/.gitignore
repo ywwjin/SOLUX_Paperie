@@ -1,0 +1,14 @@
+# Created by https://www.toptal.com/developers/gitignore/api/python,django,visualstudio,venv
+# Edit at https://www.toptal.com/developers/gitignore?templates=python,django,visualstudio,venv
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlit
+db.sqlite3-journal
+media
+my_settings.py
+.venv
