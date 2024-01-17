@@ -11,3 +11,4 @@ db.sqlit
 db.sqlite3-journal
 media
 my_settings.py
+.venv
