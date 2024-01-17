@@ -19,8 +19,9 @@ connection = mysql.connector.connect(
 #커서 생성
 cursor = connection.cursor()
 
-#데이터 삽입
+
 try:
+    #데이터 삽입
     news_data = response.json()
     articles = news_data.get('articles', [])
 
