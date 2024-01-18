@@ -1,11 +1,13 @@
 import requests
 import mysql.connector
+import sys
+sys.path.append("#")
 import my_settings
 
 url = ('https://newsapi.org/v2/everything?'
-       'q=keyword&'
+       'q="turtle"&'
        'sortBy=popularity&'
-       'apiKey={my_settings.NEWS_API_KEY}')
+       f'apiKey={my_settings.NEWS_API_KEY}')
 
 response = requests.get(url)
 
@@ -27,12 +29,14 @@ try:
 
     for article in articles:
         title = article.get('title', '')
-        description = article.get('description', '')
+        author = article.get('author', '')
         url = article.get('url', '')
+        publish = article.get('publishedAt', '')
+        name = article.get('source', {}).get('name', '')
 
         # MySQL에 데이터 삽입하는 쿼리
-        insert_query = "INSERT INTO news (title, description, url) VALUES (%s, %s, %s)"
-        data = (title, description, url)
+        insert_query = "INSERT INTO news (title, author, url, publish, name) VALUES (%s, %s, %s, %s, %s)"
+        data = (title, author, url, publish, name)
 
         # 쿼리 실행
         cursor.execute(insert_query, data)
