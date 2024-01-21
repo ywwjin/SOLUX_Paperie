@@ -1,16 +1,16 @@
-import os
+#import os
 import sys
 import urllib.request
-import json
+#import json
 import mysql.connector
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+sys.path.append("C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
 import my_settings
 import requests
 
 client_id = my_settings.client_id
 client_secret = my_settings.client_secret
 
-url = "https://openapi.naver.com/v1/search/book?query=" + urllib.parse.quote("검색할 단어") # JSON 결과
+url = "https://openapi.naver.com/v1/search/book?query=" + urllib.parse.quote("생물학") # JSON 결과
 
 headers = {
     "X-Naver-Client-Id": client_id,

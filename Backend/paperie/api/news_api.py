@@ -1,9 +1,10 @@
 import requests
 import mysql.connector
 import sys
-sys.path.append("#")
+sys.path.append("C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
 import my_settings
 
+#q는 검색어
 url = ('https://newsapi.org/v2/everything?'
        'q="turtle"&'
        'sortBy=popularity&'
@@ -57,7 +58,7 @@ finally:
 # Check the response status
 if response.status_code == 200:
     news_data = response.json()
-    print(news_data)
+    #print(news_data)
 else:
     print("Error:{response.status_code}")
     print(response.text)
