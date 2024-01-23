@@ -48,9 +48,9 @@ INSTALLED_APPS = [
     'citation',
     'book',
     'news',
+    'scholar',
 
     'rest_framework',
-
 ]
 
 MIDDLEWARE = [
