@@ -1,16 +1,22 @@
 from django.http import JsonResponse
 import requests
+import urllib
+from urllib.parse import quote_plus
 import mysql.connector
 from my_settings import NEWS_API_KEY, DATABASES
 import sys
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
 import my_settings
 
 def search_news(request):
+
+    query = request.GET.get('q')
+
     url = ('https://newsapi.org/v2/everything?'
-           'q="turtle"&'
+           f'q={quote_plus(query)}&'
            'sortBy=popularity&'
-           f'apiKey={NEWS_API_KEY}')
+           f'apiKey={NEWS_API_KEY}&'
+           'pageSize=20')
 
     response = requests.get(url)
 
