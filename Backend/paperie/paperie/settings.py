@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'accounts',
     'api',
     'citation',
+    'book',
+    'news',
 
     'rest_framework',
 
