@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from book.views import search_books, apa_books, mla_books, chi_books, van_books
 from news.views import search_news, apa_news, mla_news, chi_news, van_news
-from scholar.views import search_scholar
+from scholar.views import search_scholars, apa_scholars, mla_scholars, chi_scholars, van_scholars
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +26,7 @@ urlpatterns = [
 
     path('api/books', search_books, name='search_books'),
     path('api/news', search_news, name='search_news'),
-    path('api/scholar', search_scholar, name='search_scholar'),
+    path('api/scholar', search_scholars, name='search_scholar'),
 
     path('apa/books', apa_books, name='apa_books'),
     path('mla/books', mla_books, name='mla_books'),
@@ -37,5 +37,9 @@ urlpatterns = [
     path('mla/news', mla_news, name='mla_news'),
     path('chi/news', chi_news, name='chi_news'),
     path('van/news', van_news, name='van_news'),
-]
 
+    path('apa/scholars', apa_scholars, name='apa_scholars'),
+    path('mla/scholars', mla_scholars, name='mla_scholars'),
+    path('chi/scholars', chi_scholars, name='chi_scholars'),
+    path('van/scholars', van_scholars, name='van_scholars'),
+]
