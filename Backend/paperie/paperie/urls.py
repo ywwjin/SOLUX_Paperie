@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from book.views import search_books
+from book.views import search_books, apa_books, mla_books, chi_books, van_books
 from news.views import search_news
 from scholar.views import search_scholar
 
@@ -26,4 +26,9 @@ urlpatterns = [
     path('api/books', search_books, name='search_books'),
     path('api/news', search_news, name='search_news'),
     path('api/scholar', search_scholar, name='search_scholar'),
+    path('apa/books', apa_books, name='apa_books'),
+    path('mla/books', mla_books, name='mla_books'),
+    path('chi/books', chi_books, name='chi_books'),
+    path('van/books', van_books, name='van_books'),
 ]
+

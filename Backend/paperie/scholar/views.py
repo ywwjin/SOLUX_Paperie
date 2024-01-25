@@ -11,14 +11,10 @@ sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)
 def search_scholar(request):
     # query, num_results, filter 설정
     query = request.GET.get('query')  # 검색어 가져오기
-    num_results = request.GET.get('num_results')  # 결과 개수 가져오기
-    filter_type = 'journal-article'  # 필터링 조건 설정
-
     # URL 생성
     base_url = 'https://api.crossref.org/works?'
     query_param = urllib.parse.quote(query.encode("utf-8"))
-    filter_param = f'&filter=type:{filter_type}'
-    url = f'{base_url}query={query_param}{filter_param}'
+    url = f'{base_url}query={query_param}'
 
     # 요청 보내기
     response = requests.get(url)

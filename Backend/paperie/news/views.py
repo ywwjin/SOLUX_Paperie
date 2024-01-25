@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 import mysql.connector
 from my_settings import NEWS_API_KEY, DATABASES
 import sys
-sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
+sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
 import my_settings
 
 def search_news(request):
