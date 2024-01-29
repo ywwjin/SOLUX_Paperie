@@ -22,11 +22,12 @@ from scholar.views import search_scholars, apa_scholars, mla_scholars, chi_schol
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('paperie_frontend.urls')),
     path('accounts/', include('accounts.urls')),
 
     path('api/books', search_books, name='search_books'),
     path('api/news', search_news, name='search_news'),
-    path('api/scholar', search_scholars, name='search_scholar'),
+    path('api/scholars', search_scholars, name='search_scholars'),
 
     path('apa/books', apa_books, name='apa_books'),
     path('mla/books', mla_books, name='mla_books'),

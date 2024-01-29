@@ -9,18 +9,18 @@ import sys
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
 import my_settings
 
 def search_news(request):
 
-    query = request.GET.get('q')
+    query = request.GET.get('q','')
 
     url = ('https://newsapi.org/v2/everything?'
            f'q={quote_plus(query)}&'
            'sortBy=popularity&'
            f'apiKey={NEWS_API_KEY}&'
-           'pageSize=20')
+           'pageSize=10')
 
     response = requests.get(url)
 
@@ -191,3 +191,35 @@ def van_news(request):
         return HttpResponse("뉴스 정보를 찾을 수 없습니다.", status=404) 
 
     return HttpResponse(json.dumps(news_info_van[0]), content_type="application/json")
+
+#참고문헌 옮기기 함수
+'''def news_citation_database(title, ):
+    try:
+        # 새로운 데이터베이스에 데이터 삽입
+        insert_query = "INSERT INTO new_news (title, apa_format, mla_format) VALUES (%s, %s, %s)"
+        data = (title, apa_format, mla_format)
+
+        new_cursor.execute(insert_query, data)
+
+        # 변경 사항을 커밋
+        new_db_connection.commit()
+
+        print(f"News with title '{title}' inserted into the new database successfully.")
+
+    except Exception as e:
+        print(f"Error inserting news into the new database: {str(e)}")
+
+    finally:
+        # 커넥션 닫기
+        new_cursor.close()
+        new_db_connection.close()
+
+# APA 및 MLA 형식으로 변환된 뉴스 가져오기
+news_info_apa = get_news_database(selected_title, 'apa')
+news_info_mla = get_news_database(selected_title, 'mla')
+
+# 새로운 데이터베이스에 데이터 삽입
+if news_info_apa and news_info_mla:
+    insert_news_to_new_database(selected_title, news_info_apa[0], news_info_mla[0])
+else:
+    print("뉴스 정보를 찾을 수 없습니다.")'''

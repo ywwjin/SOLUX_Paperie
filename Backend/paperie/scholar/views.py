@@ -36,6 +36,14 @@ def search_scholars(request):
 
         for item in items:
             authors = ', '.join(author.get('given', '') + ' ' + author.get('family', '') for author in item.get('author', []))
+            #given = item['author'][0].get('given', '') if item.get('author') and item['author'][0].get('given') else ''
+            #family = item['author'][0].get('family', '') if item.get('author') and item['author'][0].get('family') else ''
+            given_list = [author.get('given', '') for author in item.get('author', [])]
+            family_list = [author.get('family', '') for author in item.get('author', [])]
+
+            given = ', '.join(given_list) if given_list else ''
+            family = ', '.join(family_list) if family_list else ''
+
             title = ''.join(item.get('title', ''))
             journal_title = item.get('container-title', [''])[0]
             volume = item.get('volume', '')
@@ -45,12 +53,20 @@ def search_scholars(request):
 
             # MySQL에 데이터 삽입
             try:
-                insert_query = "INSERT INTO scholar (authors, title, journal_title, volume, issue, year, page) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                data = (authors, title, journal_title, volume, issue, year, page)
-                
-                cursor.execute(insert_query, data)
-                connection.commit()
-                print("Data saved to MySQL successfully.")
+                    with connection.cursor() as cursor:
+
+                        insert_query = "INSERT INTO scholar (authors, title, journal_title, volume, issue, year, page) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                        data = (authors, title, journal_title, volume, issue, year, page)
+
+                        insert_query_author = "INSERT INTO authors (given, family) VALUES (%s, %s)"
+                        data_author = (given, family)
+
+                        cursor.execute(insert_query, data)
+                        cursor.execute(insert_query_author, data_author)
+
+                        # 모든 쿼리가 성공하면 커밋
+                        connection.commit()
+                        print("Data saved to MySQL successfully.")
 
             except mysql.connector.Error as e:
                 print(f'Error inserting data into MySQL: {e}')
@@ -103,13 +119,14 @@ def get_scholar_database(selected_title, info_type):
         default_page = '페이지'
 
         for scholar in scholars:
-            author = scholar[1] if scholar[1] else default_author
-            pubdate = scholar[6] if scholar[6] else default_pubdate
-            title = scholar[2] if scholar[2] else default_title
-            journal_title = scholar[3] if scholar[3] else default_journal_title
-            volume = scholar[4] if scholar[4] else default_volume
-            issue = scholar[5] if scholar[5] else default_issue
-            page = scholar[7] if scholar[7] else default_page
+            author = scholar[1].strip() or default_author
+            pubdate = scholar[6].strip() or default_pubdate
+            title = scholar[2].strip() or default_title
+            journal_title = scholar[3].strip() or default_journal_title
+            volume = scholar[4] or default_volume
+            issue = scholar[5] or default_issue
+            page = scholar[7].strip() or default_page
+
 
             # 저자명 (발행년도). 논문명. 저널명, 권(호), 페이지. doi
             rearranged_scholar_apa = f'{author}. ({pubdate}). {journal_title}, {volume}({issue}), {page}.'
@@ -143,6 +160,7 @@ def get_scholar_database(selected_title, info_type):
 
     finally:
         cursor.close()
+
 
 
 #APA 함수
