@@ -8,8 +8,11 @@ import requests
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
+from my_settings import DATABASES
+sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
 import my_settings
+from mysql.connector import Error
+
 
 #책 검색 함수
 def search_books(request):
@@ -35,11 +38,11 @@ def search_books(request):
 
         # MySQL 연결
         connection = mysql.connector.connect(
-            host=my_settings.DATABASES['default']['HOST'],
-            user=my_settings.DATABASES['default']['USER'],
-            password=my_settings.DATABASES['default']['PASSWORD'],
-            database=my_settings.DATABASES['default']['NAME']
-        )
+        host=DATABASES['default']['HOST'],
+        user=DATABASES['default']['USER'],
+        password=DATABASES['default']['PASSWORD'],
+        database=DATABASES['default']['NAME']
+    )
         cursor = connection.cursor()
 
         # lastBuildDate 가져오기
@@ -78,24 +81,26 @@ def search_books(request):
         cursor.close()
         connection.close()
 
-        return JsonResponse({'message': '데이터를 MySQL에 성공적으로 저장했습니다.'})
+        output = f"데이터를 MySQL에 성공적으로 저장했습니다.\n\n{data}"
+        return HttpResponse(output)
+    
     else:
         return JsonResponse({'error': 'API 요청에 실패했습니다.'})
 
 
 #DB에서 제목과 일치하는 정보 가져오는 함수
-def get_book_database(selected_title, info_type):
+def get_book_database(selected_title, selected_author, selected_publish, info_type):
     # MySQL 연결
     connection = mysql.connector.connect(
-        host=my_settings.DATABASES['default']['HOST'],
-        user=my_settings.DATABASES['default']['USER'],
-        password=my_settings.DATABASES['default']['PASSWORD'],
-        database=my_settings.DATABASES['default']['NAME']
+        host=DATABASES['default']['HOST'],
+        user=DATABASES['default']['USER'],
+        password=DATABASES['default']['PASSWORD'],
+        database=DATABASES['default']['NAME']
     )
     cursor = connection.cursor()
 
     # MySQL에서 선택한 도서 정보 가져오기
-    select_query = f"SELECT author, pubdate, title, publisher FROM book WHERE title = '{selected_title}'"
+    select_query = f"SELECT author, pubdate, title, publisher FROM book WHERE title = '{selected_title}' AND author = '{selected_author}' AND publisher = '{selected_publish}'"
     cursor.execute(select_query)
     books = cursor.fetchall()
 
@@ -111,8 +116,8 @@ def get_book_database(selected_title, info_type):
 
         rearranged_book_apa = f"{author}. ({pubdate}). {title}. {publisher}."
         rearranged_book_mla = f"{author}. {title}. {publisher}, {pubdate}."
-        rearranged_book_chi = f"{author}. {title}. {publisher}, {pubdate}."
-        rearranged_book_van = f"{author}. {title}. {publisher}; {pubdate}."
+        rearranged_book_chi = f"{author}. {title}. (출판지: {publisher}, {pubdate}), 페이지"
+        rearranged_book_van = f"{author}. {title}. 출판지: {publisher}; {pubdate}. 페이지 p"
 
         book_info_apa.append(rearranged_book_apa)
         book_info_mla.append(rearranged_book_mla)
@@ -135,50 +140,98 @@ def get_book_database(selected_title, info_type):
         return None
 
 
+
+def insert_data_to_database(title, content, ref):
+    try:
+        connection = mysql.connector.connect(
+            host=DATABASES['default']['HOST'],
+            user=DATABASES['default']['USER'],
+            password=DATABASES['default']['PASSWORD'],
+            database=DATABASES['default']['NAME']
+        )
+
+        if connection.is_connected():
+            cursor = connection.cursor()
+
+            # MySQL에 데이터 삽입하는 쿼리
+            insert_query = "INSERT INTO result (title, content, ref, type, date) VALUES (%s, %s, %s, %s, %s)"
+            insert_data = (title, ', '.join(content), ref, "책", datetime.datetime.now())
+
+            # 쿼리 실행
+            cursor.execute(insert_query, insert_data)
+            connection.commit()
+
+            # MySQL 연결 종료
+            cursor.close()
+            connection.close()
+
+    except Error as e:
+        print("MySQL 연결 오류:", e)
+        # 오류 처리를 원하는 방식으로 수정해주세요 
+
+
+
+
 #APA 함수
 def apa_books(request):
-    selected_title = request.GET.get('selected_title')  
+    selected_title = request.GET.get('selected_title')
+    selected_author = request.GET.get('selected_author')
+    selected_publish = request.GET.get('selected_publish')
 
-    book_info_apa = get_book_database(selected_title, 'apa')
+
+    book_info_apa = get_book_database(selected_title, selected_author, selected_publish, 'apa')
 
     if not book_info_apa:
-        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
+        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
+
+    insert_data_to_database(selected_title, book_info_apa, "APA")
 
     return HttpResponse(json.dumps(book_info_apa), content_type="application/json")
 
 
 #MLA 함수
 def mla_books(request):
-    selected_title = request.GET.get('selected_title')  
+    selected_title = request.GET.get('selected_title')
+    selected_author = request.GET.get('selected_author')
+    selected_publish = request.GET.get('selected_publish')  
 
-    book_info_mla = get_book_database(selected_title, 'mla')
+    book_info_mla = get_book_database(selected_title, selected_author, selected_publish,'mla')
 
     if not book_info_mla:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
+    
+    insert_data_to_database(selected_title, book_info_mla, "MLA")
 
     return HttpResponse(json.dumps(book_info_mla), content_type="application/json")
 
 
 #CHICAGO 함수
 def chi_books(request):
-    selected_title = request.GET.get('selected_title')  
+    selected_title = request.GET.get('selected_title') 
+    selected_author = request.GET.get('selected_author')
+    selected_publish = request.GET.get('selected_publish')  
 
-    book_info_chi = get_book_database(selected_title, 'chi')
+    book_info_chi = get_book_database(selected_title, selected_author, selected_publish,'chi')
 
     if not book_info_chi:
-        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
+        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
+
+    insert_data_to_database(selected_title, book_info_chi, "CHI")   
 
     return HttpResponse(json.dumps(book_info_chi), content_type="application/json")
 
 
 #VANCUVER 함수
 def van_books(request):
-    selected_title = request.GET.get('selected_title')  
+    selected_title = request.GET.get('selected_title')
+    selected_author = request.GET.get('selected_author')
+    selected_publish = request.GET.get('selected_publish')   
 
-    book_info_van = get_book_database(selected_title, 'van')
+    book_info_van = get_book_database(selected_title, selected_author, selected_publish, 'van')
 
     if not book_info_van:
-        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
+        return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
+    insert_data_to_database(selected_title, book_info_van, "VAN") 
+    
     return HttpResponse(json.dumps(book_info_van), content_type="application/json")
-
