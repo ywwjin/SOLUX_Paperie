@@ -9,7 +9,7 @@ import sys
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie")
 import my_settings
 from mysql.connector import Error
 import datetime
@@ -22,7 +22,7 @@ def search_news(request):
            f'q={quote_plus(query)}&'
            'sortBy=popularity&'
            f'apiKey={NEWS_API_KEY}&'
-           'pageSize=20')
+           'pageSize=10')
 
     response = requests.get(url)
 
@@ -41,6 +41,7 @@ def search_news(request):
         # 데이터 삽입
         news_data = response.json()
         articles = news_data.get('articles', [])
+        result_list = []
 
         for article in articles:
             title = article.get('title', '')
@@ -56,11 +57,19 @@ def search_news(request):
             # 쿼리 실행
             cursor.execute(insert_query, data)
 
+            # Append the relevant data to the result list
+            result_list.append({
+                'title': title,
+                'name': name,
+                'url': url,
+            })
+
             # 변경 사항을 커밋
             connection.commit()
         
         response_data = {
-            'message': 'Data saved to MySQL successfully.'
+            'message': 'Data saved to MySQL successfully.',
+            'results': result_list
         }
 
     except Exception as e:
