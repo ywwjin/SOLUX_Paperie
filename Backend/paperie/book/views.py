@@ -52,6 +52,8 @@ def search_books(request):
         last_build_date = datetime.datetime.strptime(last_build_date, "%a, %d %b %Y %H:%M:%S +0900")
         last_build_date = last_build_date.strftime("%Y-%m-%d")
 
+        output = []
+
         # 도서 정보를 MySQL에 삽입
         for book in data['items']:
             title = book['title']
@@ -74,6 +76,13 @@ def search_books(request):
             # 쿼리 실행
             cursor.execute(insert_query, insert_data)
 
+            book_info = {
+                    'title': title,
+                    'author': author,
+                    'publish': publisher
+                }
+            output.append(book_info)  # 도서 정보를 리스트에 추가
+
         # 변경 사항 커밋
         connection.commit()
 
@@ -81,8 +90,7 @@ def search_books(request):
         cursor.close()
         connection.close()
 
-        output = f"데이터를 MySQL에 성공적으로 저장했습니다.\n\n{data}"
-        return HttpResponse(output)
+        return HttpResponse(json.dumps(output), content_type='application/json')
     
     else:
         return JsonResponse({'error': 'API 요청에 실패했습니다.'})

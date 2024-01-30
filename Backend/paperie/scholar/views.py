@@ -17,7 +17,7 @@ def search_scholars(request):
     # URL 생성
     base_url = 'https://api.crossref.org/works?'
     query_param = urllib.parse.quote(query.encode("utf-8"))
-    url = f'{base_url}query={query_param}'
+    url = f'{base_url}query={query_param}&rows=10'
 
     # 요청 보내기
     response = requests.get(url)
@@ -35,6 +35,8 @@ def search_scholars(request):
     if response.status_code == 200:
         data = response.json()
         items = data.get('message', {}).get('items', [])
+
+        output = []
 
         for item in items:
             authors = ', '.join(author.get('given', '') + ' ' + author.get('family', '') for author in item.get('author', []))
@@ -57,11 +59,19 @@ def search_scholars(request):
             except mysql.connector.Error as e:
                 print(f'Error inserting data into MySQL: {e}')
 
+
+            scholar_info = {
+                    'title': title,
+                    'author': authors,
+                    'year': year
+                }
+            output.append(scholar_info) 
+
         # MySQL 연결 종료
         cursor.close()
         connection.close()
 
-        return HttpResponse("Data saved to MySQL successfully.")  # 데이터 저장 성공 시 응답 반환
+        return HttpResponse(json.dumps(output), content_type='application/json')
 
     else:
         print(f'Error: {response.status_code}')
