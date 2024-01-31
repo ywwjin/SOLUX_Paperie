@@ -19,10 +19,10 @@ from django.urls import path, include
 from book.views import search_books, apa_books, mla_books, chi_books, van_books
 from news.views import search_news, apa_news, mla_news, chi_news, van_news
 from scholar.views import search_scholars, apa_scholars, mla_scholars, chi_scholars, van_scholars
+from mypage.views import mypage_get
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('paperie_frontend.urls')),
     path('accounts/', include('accounts.urls')),
 
     path('api/books', search_books, name='search_books'),
@@ -43,4 +43,6 @@ urlpatterns = [
     path('mla/scholars', mla_scholars, name='mla_scholars'),
     path('chi/scholars', chi_scholars, name='chi_scholars'),
     path('van/scholars', van_scholars, name='van_scholars'),
+
+    path('mypage/get', mypage_get, name='mypage_get'),
 ]
