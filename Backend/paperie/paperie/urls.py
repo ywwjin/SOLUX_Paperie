@@ -19,7 +19,7 @@ from django.urls import path, include
 from book.views import search_books, apa_books, mla_books, chi_books, van_books
 from news.views import search_news, apa_news, mla_news, chi_news, van_news
 from scholar.views import search_scholars, apa_scholars, mla_scholars, chi_scholars, van_scholars
-from mypage.views import mypage_get
+from mypage.views import mypage_get, mypage_books, mypage_news, mypage_scholars
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,4 +45,7 @@ urlpatterns = [
     path('van/scholars', van_scholars, name='van_scholars'),
 
     path('mypage/get', mypage_get, name='mypage_get'),
+    path('mypage/books', mypage_books, name='mypage_books'),
+    path('mypage/news', mypage_news, name='mypage_news'),
+    path('mypage/scholars', mypage_scholars, name='mypage_scholars'),
 ]
