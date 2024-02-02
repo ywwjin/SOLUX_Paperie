@@ -2,15 +2,21 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from my_settings import DATABASES
 import mysql.connector
+import datetime
 import sys
 sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+from django.db import connection
+import json
 
-def mypage_get(request):
-    if request.method == 'GET':
-        title = request.GET.get('title')
-        ref = request.GET.get('ref')
+def mypage_save(request):
+    if request.method == 'POST':
+        # POST로 전달된 데이터 받기
+        title = request.POST.get('title')
+        content = request.POST.getlist('content')
+        type = request.POST.get('type')
+        ref = request.POST.get('ref')
 
-        # MySQL 연결 설정
+        # 데이터베이스 연결 설정
         connection = mysql.connector.connect(
             host=DATABASES['default']['HOST'],
             user=DATABASES['default']['USER'],
@@ -19,150 +25,62 @@ def mypage_get(request):
         )
         cursor = connection.cursor()
 
-        # 쿼리 생성 및 실행
-        query = "SELECT * FROM result WHERE title = %s AND ref = %s"
-        cursor.execute(query, (title, ref))
-
-        # 결과 가져오기 및 딕셔너리 형태로 변환
-        result = cursor.fetchall()
-        result_without_id = [{
-            'type': item[1],
-            'ref': item[2],
-            'content': item[3],
-            'title': item[4],
-            'date': item[5]
-        } for item in result]
-
-        # 연결 종료
-        cursor.close()
-        connection.close()
-
-        # JSON 형식으로 응답 반환
-        return JsonResponse(result_without_id, safe=False)
-
-    else:
-        return HttpResponse('잘못된 요청입니다.', status=400)
-
-
-def mypage_books(request):
-    if request.method == 'GET':
         try:
-            connection = mysql.connector.connect(
-                host=DATABASES['default']['HOST'],
-                user=DATABASES['default']['USER'],
-                password=DATABASES['default']['PASSWORD'],
-                database=DATABASES['default']['NAME']
-            )
-            cursor = connection.cursor()
+            # 쿼리와 데이터 준비
+            insert_query = "INSERT INTO result (title, content, ref, type, date) VALUES (%s, %s, %s, %s, %s)"
+            insert_data = (title, ', '.join(content), ref, type, datetime.datetime.now())
 
-            # '책' 타입인 항목만 가져오는 쿼리문
-            query = "SELECT * FROM result WHERE type='책'"
+            # 데이터베이스에 데이터 저장
+            with connection.cursor() as cursor:
+                cursor.execute(insert_query, insert_data)
+            connection.commit()
 
-            # 쿼리 실행
-            cursor.execute(query)
-
-            # 결과 가져오기
-            result = cursor.fetchall()
-
-            # '책' 타입인 항목만 필터링하여 반환
-            result_filtered = [{
-                'type': item[1],
-                'ref': item[2],
-                'content': item[3],
-                'title': item[4],
-                'date': item[5]
-            } for item in result if item[1] == '책']
-
-            cursor.close()
-            connection.close()
-
-            return JsonResponse(result_filtered, safe=False)
+            # 저장 성공 메시지 반환
+            return HttpResponse("데이터 저장이 완료되었습니다.")
 
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            # 저장 실패 메시지 반환
+            return HttpResponse(f"데이터 저장 중 오류가 발생했습니다: {str(e)}")
 
-    else:
-        return HttpResponse('잘못된 요청입니다.', status=400)
-
-
-def mypage_news(request):
-    if request.method == 'GET':
-        try:
-            connection = mysql.connector.connect(
-                host=DATABASES['default']['HOST'],
-                user=DATABASES['default']['USER'],
-                password=DATABASES['default']['PASSWORD'],
-                database=DATABASES['default']['NAME']
-            )
-            cursor = connection.cursor()
-
-            # '뉴스' 타입인 항목만 가져오는 쿼리문
-            query = "SELECT * FROM result WHERE type='뉴스'"
-
-            # 쿼리 실행
-            cursor.execute(query)
-
-            # 결과 가져오기
-            result = cursor.fetchall()
-
-            # '뉴스' 타입인 항목만 필터링하여 반환
-            result_filtered = [{
-                'type': item[1],
-                'ref': item[2],
-                'content': item[3],
-                'title': item[4],
-                'date': item[5]
-            } for item in result if item[1] == '뉴스']
-
-            cursor.close()
+        finally:
+            # 연결 종료
             connection.close()
 
-            return JsonResponse(result_filtered, safe=False)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
     else:
-        return HttpResponse('잘못된 요청입니다.', status=400)
-    
+        return HttpResponse("잘못된 요청입니다.")
 
-def mypage_scholars(request):
+
+def mypage_all(request):
+
     if request.method == 'GET':
+        # 데이터베이스 연결 설정
+        cursor = connection.cursor()
+
         try:
-            connection = mysql.connector.connect(
-                host=DATABASES['default']['HOST'],
-                user=DATABASES['default']['USER'],
-                password=DATABASES['default']['PASSWORD'],
-                database=DATABASES['default']['NAME']
-            )
-            cursor = connection.cursor()
-
-            # '논문' 타입인 항목만 가져오는 쿼리문
-            query = "SELECT * FROM result WHERE type='논문'"
-
             # 쿼리 실행
-            cursor.execute(query)
+            select_query = "SELECT * FROM result"
+            cursor.execute(select_query)
 
-            # 결과 가져오기
-            result = cursor.fetchall()
+            # 조회 결과 가져오기
+            results = cursor.fetchall()
 
-            # '논문' 타입인 항목만 필터링하여 반환
-            result_filtered = [{
-                'type': item[1],
-                'ref': item[2],
-                'content': item[3],
-                'title': item[4],
-                'date': item[5]
-            } for item in result if item[1] == '논문']
+            # 결과를 JSON 형식으로 변환하여 반환
+            result_list = []
+            for row in results:
+                result = {
+                    'Title': row[1],
+                    'Content': row[2],
+                    'Ref': row[3],
+                    'Type': row[4],
+                    'Date': str(row[5])
+                }
+                result_list.append(result)
 
-            cursor.close()
-            connection.close()
-
-            return JsonResponse(result_filtered, safe=False)
+            return HttpResponse(json.dumps(result_list), content_type='application/json')
 
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            # 조회 실패 메시지 반환
+            return HttpResponse(f"데이터 조회 중 오류가 발생했습니다: {str(e)}")
 
     else:
-        return HttpResponse('잘못된 요청입니다.', status=400)
-
+        return HttpResponse("잘못된 요청입니다.")

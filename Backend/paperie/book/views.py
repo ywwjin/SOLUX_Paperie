@@ -149,50 +149,16 @@ def get_book_database(selected_title, selected_author, selected_publish, info_ty
 
 
 
-def insert_data_to_database(title, content, ref):
-    try:
-        connection = mysql.connector.connect(
-            host=DATABASES['default']['HOST'],
-            user=DATABASES['default']['USER'],
-            password=DATABASES['default']['PASSWORD'],
-            database=DATABASES['default']['NAME']
-        )
-
-        if connection.is_connected():
-            cursor = connection.cursor()
-
-            # MySQL에 데이터 삽입하는 쿼리
-            insert_query = "INSERT INTO result (title, content, ref, type, date) VALUES (%s, %s, %s, %s, %s)"
-            insert_data = (title, ', '.join(content), ref, "책", datetime.datetime.now())
-
-            # 쿼리 실행
-            cursor.execute(insert_query, insert_data)
-            connection.commit()
-
-            # MySQL 연결 종료
-            cursor.close()
-            connection.close()
-
-    except Error as e:
-        print("MySQL 연결 오류:", e)
-        # 오류 처리를 원하는 방식으로 수정해주세요 
-
-
-
-
 #APA 함수
 def apa_books(request):
     selected_title = request.GET.get('selected_title')
     selected_author = request.GET.get('selected_author')
     selected_publish = request.GET.get('selected_publish')
 
-
     book_info_apa = get_book_database(selected_title, selected_author, selected_publish, 'apa')
 
     if not book_info_apa:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
-
-    insert_data_to_database(selected_title, book_info_apa, "APA")
 
     return HttpResponse(json.dumps(book_info_apa), content_type="application/json")
 
@@ -201,14 +167,12 @@ def apa_books(request):
 def mla_books(request):
     selected_title = request.GET.get('selected_title')
     selected_author = request.GET.get('selected_author')
-    selected_publish = request.GET.get('selected_publish')  
+    selected_publish = request.GET.get('selected_publish')
 
     book_info_mla = get_book_database(selected_title, selected_author, selected_publish,'mla')
 
     if not book_info_mla:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
-    
-    insert_data_to_database(selected_title, book_info_mla, "MLA")
 
     return HttpResponse(json.dumps(book_info_mla), content_type="application/json")
 
@@ -224,8 +188,6 @@ def chi_books(request):
     if not book_info_chi:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
-    insert_data_to_database(selected_title, book_info_chi, "CHI")   
-
     return HttpResponse(json.dumps(book_info_chi), content_type="application/json")
 
 
@@ -240,6 +202,4 @@ def van_books(request):
     if not book_info_van:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
-    insert_data_to_database(selected_title, book_info_van, "VAN") 
-    
     return HttpResponse(json.dumps(book_info_van), content_type="application/json")
