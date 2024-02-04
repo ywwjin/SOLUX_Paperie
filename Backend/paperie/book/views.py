@@ -8,10 +8,11 @@ import requests
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from my_settings import DATABASES
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
-import my_settings
 from mysql.connector import Error
+
+sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
+import my_settings
+from my_settings import DATABASES
 
 
 #책 검색 함수
@@ -61,7 +62,6 @@ def search_books(request):
             publisher = book['publisher']
             pubdate = book['pubdate']
             discount = book['discount']
-            isbn = book['isbn']
             image = book['image']
 
             if 'url' in book:
@@ -70,8 +70,8 @@ def search_books(request):
                 url = None
 
             # MySQL에 데이터 삽입하는 쿼리
-            insert_query = "INSERT INTO book (title, author, publisher, pubdate, discount, isbn, image, url, searchdate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            insert_data = (title, author, publisher, pubdate, discount, isbn, image, url, last_build_date)
+            insert_query = "INSERT INTO book (title, author, publisher, pubdate, discount, image, url, searchdate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            insert_data = (title, author, publisher, pubdate, discount, image, url, last_build_date)
 
             # 쿼리 실행
             cursor.execute(insert_query, insert_data)

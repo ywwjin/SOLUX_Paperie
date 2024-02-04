@@ -4,7 +4,7 @@ from my_settings import DATABASES
 import mysql.connector
 import datetime
 import sys
-sys.path.append(r"C:\Users\한지수\Documents\GitHub\한지수\SOLUX_Paperie(4)\Backend\paperie")
+sys.path.append(r"C:/Users/김유진/OneDrive/문서/GitHub/SOLUX_Paperie/Backend/paperie/paperie")
 from django.db import connection
 import json
 

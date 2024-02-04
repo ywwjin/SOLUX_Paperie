@@ -6,4 +6,5 @@ app_name = 'accounts'
 urlpatterns = [
     path('signup/', views.signup),
     path('api/token/', TokenObtainPairView.as_view()),
+    path('logout/', views.logout),
 ]
