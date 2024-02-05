@@ -97,7 +97,7 @@ def search_books(request):
 
 
 #DB에서 제목과 일치하는 정보 가져오는 함수
-def get_book_database(selected_title, selected_author, selected_publish, info_type):
+def get_book_database(selected_title, info_type):
     # MySQL 연결
     connection = mysql.connector.connect(
         host=DATABASES['default']['HOST'],
@@ -108,7 +108,7 @@ def get_book_database(selected_title, selected_author, selected_publish, info_ty
     cursor = connection.cursor()
 
     # MySQL에서 선택한 도서 정보 가져오기
-    select_query = f"SELECT author, pubdate, title, publisher FROM book WHERE title = '{selected_title}' AND author = '{selected_author}' AND publisher = '{selected_publish}'"
+    select_query = f"SELECT author, pubdate, title, publisher FROM book WHERE title = '{selected_title}'"
     cursor.execute(select_query)
     books = cursor.fetchall()
 
@@ -124,8 +124,8 @@ def get_book_database(selected_title, selected_author, selected_publish, info_ty
 
         rearranged_book_apa = f"{author}. ({pubdate}). {title}. {publisher}."
         rearranged_book_mla = f"{author}. {title}. {publisher}, {pubdate}."
-        rearranged_book_chi = f"{author}. {title}. (출판지: {publisher}, {pubdate}), 페이지"
-        rearranged_book_van = f"{author}. {title}. 출판지: {publisher}; {pubdate}. 페이지 p"
+        rearranged_book_chi = f"{author}. {title}. (출판지: {publisher}, {pubdate})"
+        rearranged_book_van = f"{author}. {title}. 출판지: {publisher}; {pubdate}."
 
         book_info_apa.append(rearranged_book_apa)
         book_info_mla.append(rearranged_book_mla)
@@ -152,54 +152,46 @@ def get_book_database(selected_title, selected_author, selected_publish, info_ty
 #APA 함수
 def apa_books(request):
     selected_title = request.GET.get('selected_title')
-    selected_author = request.GET.get('selected_author')
-    selected_publish = request.GET.get('selected_publish')
 
-    book_info_apa = get_book_database(selected_title, selected_author, selected_publish, 'apa')
+    book_info_apa = get_book_database(selected_title,'apa')
 
     if not book_info_apa:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
-    return HttpResponse(json.dumps(book_info_apa), content_type="application/json")
+    return HttpResponse(json.dumps(book_info_apa[0]), content_type="application/json")
 
 
 #MLA 함수
 def mla_books(request):
     selected_title = request.GET.get('selected_title')
-    selected_author = request.GET.get('selected_author')
-    selected_publish = request.GET.get('selected_publish')
 
-    book_info_mla = get_book_database(selected_title, selected_author, selected_publish,'mla')
+    book_info_mla = get_book_database(selected_title,'mla')
 
     if not book_info_mla:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404) 
 
-    return HttpResponse(json.dumps(book_info_mla), content_type="application/json")
+    return HttpResponse(json.dumps(book_info_mla[0]), content_type="application/json")
 
 
 #CHICAGO 함수
 def chi_books(request):
-    selected_title = request.GET.get('selected_title') 
-    selected_author = request.GET.get('selected_author')
-    selected_publish = request.GET.get('selected_publish')  
+    selected_title = request.GET.get('selected_title')  
 
-    book_info_chi = get_book_database(selected_title, selected_author, selected_publish,'chi')
+    book_info_chi = get_book_database(selected_title,'chi')
 
     if not book_info_chi:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
-    return HttpResponse(json.dumps(book_info_chi), content_type="application/json")
+    return HttpResponse(json.dumps(book_info_chi[0]), content_type="application/json")
 
 
 #VANCUVER 함수
 def van_books(request):
     selected_title = request.GET.get('selected_title')
-    selected_author = request.GET.get('selected_author')
-    selected_publish = request.GET.get('selected_publish')   
-
-    book_info_van = get_book_database(selected_title, selected_author, selected_publish, 'van')
+    
+    book_info_van = get_book_database(selected_title,'van')
 
     if not book_info_van:
         return HttpResponse("도서 정보를 찾을 수 없습니다.", status=404)
 
-    return HttpResponse(json.dumps(book_info_van), content_type="application/json")
+    return HttpResponse(json.dumps(book_info_van[0]), content_type="application/json")

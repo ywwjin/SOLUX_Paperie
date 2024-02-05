@@ -198,7 +198,7 @@ def apa_scholars(request):
 
     insert_data_to_database(selected_title, scholar_info_apa, "APA")
 
-    return HttpResponse(json.dumps(scholar_info_apa), content_type="application/json")
+    return HttpResponse(json.dumps(scholar_info_apa[0]), content_type="application/json")
 
 # MLA 함수
 def mla_scholars(request):
@@ -211,7 +211,7 @@ def mla_scholars(request):
 
     insert_data_to_database(selected_title, scholar_info_mla, "MLA")
 
-    return HttpResponse(json.dumps(scholar_info_mla), content_type="application/json")
+    return HttpResponse(json.dumps(scholar_info_mla[0]), content_type="application/json")
 
 # CHICAGO 함수
 def chi_scholars(request):
@@ -224,7 +224,7 @@ def chi_scholars(request):
 
     insert_data_to_database(selected_title, scholar_info_chi, "CHI")
 
-    return HttpResponse(json.dumps(scholar_info_chi), content_type="application/json")
+    return HttpResponse(json.dumps(scholar_info_chi[0]), content_type="application/json")
 
 # VANCUVER 함수
 def van_scholars(request):
@@ -237,4 +237,4 @@ def van_scholars(request):
 
     insert_data_to_database(selected_title, scholar_info_van, "VAN")
 
-    return HttpResponse(json.dumps(scholar_info_van), content_type="application/json")
+    return HttpResponse(json.dumps(scholar_info_van[0]), content_type="application/json")

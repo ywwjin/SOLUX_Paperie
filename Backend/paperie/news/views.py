@@ -129,10 +129,16 @@ def get_news_database(selected_title, info_type):
         # 변환된 날짜 다시 할당
         publish = f"{year}년 {int(month)}월 {int(day)}일"
 
+        #오늘요일
+        now = datetime.datetime.now()
+        n_year = now.year
+        n_month = now.month
+        n_day = now.day
+
         rearranged_news_apa = f"{title}.[INTERNET]. ({publish}). Retrieved from {url}."
-        rearranged_news_mla = f"{author}. \"{title}\". {name}, {publish}, {url}. 접속년도 접속월 접속일"
-        rearranged_news_chi = f"\"{title}\". {name}. {publish} 수정, 접속년도 접속월 접속일, {url}."
-        rearranged_news_van = f"{author}. \"{title}\". {name}, {publish}.  접속년도 접속월 접속일"
+        rearranged_news_mla = f"{author}. \"{title}\". {name}, {publish}, {url}. {n_year}년 {n_month}월 {n_day}일"
+        rearranged_news_chi = f"\"{title}\". {name}. {publish} 수정, {n_year}년 {n_month}월 {n_day}일, {url}."
+        rearranged_news_van = f"{author}. \"{title}\". {name}, {publish}.  {n_year}년 {n_month}월 {n_day}일"
 
         news_info_apa.append(rearranged_news_apa)
         news_info_mla.append(rearranged_news_mla)
