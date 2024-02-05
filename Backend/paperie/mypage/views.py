@@ -16,6 +16,7 @@ def mypage_save(request):
         content = data.get('content')
         ftype = data.get('type')
         ref = data.get('ref')
+        date = datetime.datetime.now()  # 현재 날짜 및 시간 가져오기
 
         # 데이터베이스 연결 설정
         connection = mysql.connector.connect(
@@ -27,8 +28,8 @@ def mypage_save(request):
         cursor = connection.cursor()
 
         # 데이터 저장 쿼리 실행
-        insert_query = "INSERT INTO save (s_content, s_type, s_ref) VALUES (%s, %s, %s)"
-        values = (content, ftype, ref)  # 단일 값으로 수정
+        insert_query = "INSERT INTO save (s_content, s_type, s_ref, s_date) VALUES (%s, %s, %s, %s)"
+        values = (content, ftype, ref, date)  # 날짜 데이터 포함
         cursor.execute(insert_query, values)
         connection.commit()
 
@@ -50,7 +51,7 @@ def mypage_all(request):
 
         try:
             # 쿼리 실행
-            select_query = "SELECT * FROM result"
+            select_query = "SELECT * FROM save"
             cursor.execute(select_query)
 
             # 조회 결과 가져오기
@@ -60,11 +61,10 @@ def mypage_all(request):
             result_list = []
             for row in results:
                 result = {
-                    'Title': row[1],
                     'Content': row[2],
                     'Ref': row[3],
-                    'Type': row[4],
-                    'Date': str(row[5])
+                    'Type': row[1],
+                    'Date': str(row[4])
                 }
                 result_list.append(result)
 
