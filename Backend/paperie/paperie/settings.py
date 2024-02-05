@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'book',
     'news',
     'scholar',
-    'google',
 
     'rest_framework',
     'rest_framework.authtoken',
