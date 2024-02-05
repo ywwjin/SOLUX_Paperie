@@ -5,6 +5,7 @@ from . import views
 app_name = 'accounts'
 urlpatterns = [
     path('signup/', views.signup),
-    path('api/token/', TokenObtainPairView.as_view()),
+    #path('login/', TokenObtainPairView.as_view()),
+    path('login/', views.login),
     path('logout/', views.logout),
 ]

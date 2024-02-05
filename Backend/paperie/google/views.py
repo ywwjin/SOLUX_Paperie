@@ -12,6 +12,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.google import views as google_view
 
 #allauth
+#pip install dj-rest-auth
 
 import os
 import requests
